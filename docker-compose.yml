@@ -1,0 +1,41 @@
+
+
+services:
+  tg_bot_app:
+    build:
+      context: ./call_app
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    working_dir: /app
+    volumes:
+      - ./call_app/src:/app
+    depends_on:
+      postgres_service:
+        condition: service_healthy
+    env_file:
+      - .env
+    entrypoint: ["make", "start-app"]
+
+  postgres_service:
+    build: 
+      context: ./postgres
+      dockerfile: Dockerfile
+    container_name: ${PG_HOST}
+    env_file:
+      - .env
+    volumes:
+      - ./postgres/init_scripts:/docker-entrypoint-initdb.d
+      - ./postgres/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${PG_DB_NAME}
+      POSTGRES_USER: ${PG_USERNAME}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - ${PG_EXTERNAL_PORT}:${PG_INTERNAL_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USERNAME} -d ${PG_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
