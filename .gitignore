@@ -3,3 +3,4 @@
 __pycache__/
 postgres/data/*
 src/core/logs
+confcall_v2_venv

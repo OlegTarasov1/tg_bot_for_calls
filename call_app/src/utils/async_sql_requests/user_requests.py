@@ -1,56 +1,72 @@
 from sqlalchemy import select
-from aiogram import types
-from models.models import Employee
+from schemas.user_pydantic_schemas.user_schema import UserTemplate
+from models.models import UserBase
 from sqlalchemy import select
-from utils.useful.sql_sessions import get_db
+from utils.useful.sql_sessions import (
+    get_db,
+    async_session
+)
 
 class AsyncRequestsUser:
 
     @staticmethod
     async def get_user_by_id(
         id: int
-    ) -> Employee:
-        async with get_db as session:
+    ) -> UserBase:
+        async with async_session() as session:
             stmt = (
                 select(
-                    Employee
+                    UserBase
                 )
                 .where(
-                    Employee.id == id
+                    UserBase.id == id
                 )
             )
 
             user = await session.execute(stmt)
             user = user.scalar_one_or_none()
-
-            return user
+            
+            if user:
+                return user
+            else:
+                return None
             
             
     @staticmethod
     async def new_user(
-        from_user: types.User
-    ) -> Employee | None:
-        async with get_db() as session:
-            stmt = (
-                select(
-                    Employee
-                )
-                .where(
-                    Employee.id == from_user.id
-                )
-            )
-
-            user = await session.execute(stmt) 
-            user = user.scalar_one_or_none()
-            
-            if user:
-                return user
-            
-            new_user = Employee(
+        from_user: UserTemplate
+    ) -> UserBase | None:
+        async with async_session() as session:
+            new_user = UserBase(
                 **from_user.model_dump()
             )
-            await session.add(new_user)
 
-            user = await session.refresh(user)
+            session.add(new_user)
+            await session.commit()
+
+            user_again = await session.refresh(new_user)
             
-            return user
+            return user_again
+        
+
+    @staticmethod
+    async def list_users(
+        page_size: int = 6,
+        page_offset: int = 0
+    ) -> list[UserBase]:
+        async with async_session() as session:
+            stmt = (
+                select(
+                    UserBase
+                )
+                .limit(page_size)
+                .offset(page_offset * page_size)
+                .order_by(
+                    UserBase.id
+                )
+            )
+
+            users = await session.execute(stmt)
+            users = users.scalars().all()
+
+            return users
