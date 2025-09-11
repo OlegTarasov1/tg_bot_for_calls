@@ -1,10 +1,18 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from schemas.cb_schemas.list_users_schema import ListUsersCallBack
-
+from schemas.cb_schemas.call_cb_schema import RetreiveCallsCallBack
 
 def get_menu_keyboard(is_admin: bool = False, is_scrum: bool = False, page: int = 0) -> InlineKeyboardMarkup:
     buttons = [
-        [InlineKeyboardButton(text="\U0001f4c5 Расписание", callback_data="call_page_1")],
+        [
+            InlineKeyboardButton(
+                text="\U0001f4c5 Расписание",
+                callback_data=RetreiveCallsCallBack(
+                    page = 0,
+                    
+                )
+            )
+        ],
     ]
 
     if is_admin:
@@ -33,4 +41,11 @@ def get_menu_keyboard(is_admin: bool = False, is_scrum: bool = False, page: int 
 
     inline_keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     return inline_keyboard
+
+
+menu = InlineKeyboardMarkup(
+    inline_keyboard = [
+        [InlineKeyboardButton(text = "\U0001f4c5 меню", callback_data = "menu")]
+    ]
+)
 

@@ -5,13 +5,15 @@ from utils.async_sql_requests.user_requests import AsyncRequestsUser
 from utils.keyboards.kbs_get_menue import get_menu_keyboard
 from schemas.user_pydantic_schemas.user_schema import UserTemplate
 from pydantic import ValidationError
-from .callback_handlers.list_users import list_users_handler
+from .user_callbacks.list_users import list_users_handler
+from .user_callbacks.menu_handler import user_menu_router
 import logging
 
 
 basic_router = Router()
 
 basic_router.include_router(list_users_handler)
+basic_router.include_router(user_menu_router)
 
 
 @basic_router.message(Command("start"))

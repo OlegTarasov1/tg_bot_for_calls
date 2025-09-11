@@ -1,51 +1,51 @@
 from schemas.cb_schemas.retreive_user_callback import RetreiveUserCallBack
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from schemas.cb_schemas.list_users_schema import ListUsersCallBack
 from models.models import UserBase
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-# Список сотрудников
-def create_user_list_keyboard(
+
+
+
+
+async def create_user_list_keyboard(
     employees: list[UserBase],
     page: int,
     employees_per_page: int,
     is_admin: bool = False
 ) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
 
-    page_buttons = [
-        [
+    for i in employees:
+        builder.add(
             InlineKeyboardButton(
-                f"{employee.first_name} {employee.last_name}",
-                callback_data=RetreiveUserCallBack(id = employee.id).pack()
-            )
-        ]
-        for employee in employees
-    ]
-
-    nav_buttons = []
-    if page > 0:
-        nav_buttons.append(
-            InlineKeyboardButton(
-                "\U000025c0 Назад", callback_data=f"users_page_{page - 1}"
+                text = f"{i.first_name} {i.last_name}",
+                callback_data = RetreiveUserCallBack(id = i.id).pack()
             )
         )
-
-    nav_buttons.append(InlineKeyboardButton("\U0001f4d2 Меню", callback_data="menu"))
+    if page > 0:
+        builder.add(
+            InlineKeyboardButton(
+                "\U000025c0 Назад",
+                callback_data = ListUsersCallBack(page = page - 1).pack()
+            )
+        )
 
     if employees_per_page == len(employees):
-        nav_buttons.append(
+        builder.add(
             InlineKeyboardButton(
-                "\U000025b6 Вперед", callback_data=f"users_page_{page + 1}"
+                text = "\U000025b6 Вперед",
+                callback_data = ListUsersCallBack(page = page + 1).pack()
             )
         )
 
-    page_buttons.append(nav_buttons)
     if is_admin:
-        page_buttons.append(
-            [
-                InlineKeyboardButton(
-                    "\U00002795 Добавить сотрудника", callback_data="add_employee"
-                )
-            ]
+        builder.add(
+            InlineKeyboardButton(
+                text = "\U00002795 Добавить сотрудника",
+                callback_data="add_employee"
+            )
         )
 
-    inline_keyboard = InlineKeyboardMarkup(page_buttons)
-    return inline_keyboard
+    return builder.adjust(1).as_markup()
+
