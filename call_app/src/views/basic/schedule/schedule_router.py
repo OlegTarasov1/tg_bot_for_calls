@@ -8,14 +8,19 @@ from aiogram import Router, F
 schedule_router = Router()
 
 
-@schedule_router.callback_query(RetreiveCallsCallBack.filter(F.data == "user"))
+@schedule_router.callback_query(RetreiveCallsCallBack.filter(F.action == "user"))
 async def get_schedule(
     query: CallbackQuery,
     callback_data: RetreiveCallsCallBack
 ):
-    calls_list = await AsyncCallRequets.get_calls_for_user(id = query.from_user.id)
+    calls = await AsyncCallRequets.get_calls_for_user(id = query.from_user.id)
+
+    all_calls = calls.calls_employees
+    all_calls.extend(calls.calls_scrum_masters)
 
     await query.message.edit_text(
         text = "созвоны:",
-        reply_markup = await list_calls()
+        reply_markup = await list_calls(
+            user_data = all_calls
+        )
     )

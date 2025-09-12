@@ -9,7 +9,7 @@ from models.models import UserBase
 
 class AsyncCallRequets:
     @staticmethod
-    async def get_calls_for_user(id: int):
+    async def get_calls_for_user(id: int) -> UserBase:
         async with async_session() as session:
             stmt = (
                 select(
@@ -29,5 +29,5 @@ class AsyncCallRequets:
             )
 
             data = await session.execute(stmt)
-            
+            data = data.unique().scalar_one_or_none()
             return data

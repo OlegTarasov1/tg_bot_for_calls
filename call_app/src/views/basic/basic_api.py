@@ -7,6 +7,7 @@ from schemas.user_pydantic_schemas.user_schema import UserTemplate
 from pydantic import ValidationError
 from .user_callbacks.list_users import list_users_handler
 from .user_callbacks.menu_handler import user_menu_router
+from .schedule.schedule_router import schedule_router
 import logging
 
 
@@ -14,6 +15,7 @@ basic_router = Router()
 
 basic_router.include_router(list_users_handler)
 basic_router.include_router(user_menu_router)
+basic_router.include_router(schedule_router)
 
 
 @basic_router.message(Command("start"))
@@ -33,9 +35,6 @@ async def start_handler(msg: Message):
             logging.warning("что-то не так с данными: " + msg.from_user)
 
     else:
-        logging.warning(
-            f"is_admin: {user.is_admin},\nis_scrum: {user.is_scrum}"
-        )
         await msg.answer(
             "Выберите:",
             reply_markup = get_menu_keyboard(

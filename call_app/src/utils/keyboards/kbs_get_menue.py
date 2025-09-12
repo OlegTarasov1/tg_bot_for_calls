@@ -8,9 +8,8 @@ def get_menu_keyboard(is_admin: bool = False, is_scrum: bool = False, page: int 
             InlineKeyboardButton(
                 text="\U0001f4c5 Расписание",
                 callback_data=RetreiveCallsCallBack(
-                    page = 0,
-                    
-                )
+                    page = 0
+                ).pack()
             )
         ],
     ]
