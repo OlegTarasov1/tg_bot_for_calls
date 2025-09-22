@@ -1,7 +1,7 @@
 from schemas.cb_schemas.retreive_user_callback import RetreiveUserCallBack
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from schemas.cb_schemas.list_users_schema import ListUsersCallBack
-from models.models import UserBase
+from models.models import UsersBase
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
@@ -9,7 +9,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 async def create_user_list_keyboard(
-    employees: list[UserBase],
+    employees: list[UsersBase],
     page: int,
     employees_per_page: int,
     is_admin: bool = False

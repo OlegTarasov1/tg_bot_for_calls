@@ -12,6 +12,7 @@ class UserTemplate(
     first_name: str = Field(max_length=255)
     last_name: str = Field(max_length=255)
     username: str = Field(max_length=255)
+    chat_id: int
 
     class Config:
         extra = "ignore"

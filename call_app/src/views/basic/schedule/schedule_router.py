@@ -13,10 +13,9 @@ async def get_schedule(
     query: CallbackQuery,
     callback_data: RetreiveCallsCallBack
 ):
-    calls = await AsyncCallRequets.get_calls_for_user(id = query.from_user.id)
+    users = await AsyncCallRequets.get_calls_for_user(id = query.from_user.id)
 
-    all_calls = calls.calls_employees
-    all_calls.extend(calls.calls_scrum_masters)
+    all_calls = users.calls 
 
     await query.message.edit_text(
         text = "созвоны:",

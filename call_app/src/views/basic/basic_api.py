@@ -8,6 +8,7 @@ from pydantic import ValidationError
 from .user_callbacks.list_users import list_users_handler
 from .user_callbacks.menu_handler import user_menu_router
 from .schedule.schedule_router import schedule_router
+from tasks.tasks import message_before_call
 import logging
 
 
@@ -23,14 +24,24 @@ async def start_handler(msg: Message):
     user = await AsyncRequestsUser.get_user_by_id(
         id = msg.from_user.id
     )
+    
+    message_before_call.apply_async(
+        args = ["some text", 1],
+        countdown = 5
+    )
 
     if not user:
         await msg.answer("вас нет в базе")
         try:
-            user_data = UserTemplate(**msg.from_user.model_dump())
+            user_data = UserTemplate(
+                **msg.from_user.model_dump(),
+                chat_id = msg.chat.id
+            )
             await AsyncRequestsUser.new_user(
                 from_user = user_data
             )
+            
+
         except ValidationError:
             logging.warning("что-то не так с данными: " + msg.from_user)
 
@@ -39,6 +50,6 @@ async def start_handler(msg: Message):
             "Выберите:",
             reply_markup = get_menu_keyboard(
                 is_admin = user.is_admin,
-                is_scrum = user.scrum
+                is_scrum = user.is_scrum
             )
         )

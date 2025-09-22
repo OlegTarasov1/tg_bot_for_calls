@@ -13,6 +13,8 @@ services:
     depends_on:
       postgres_service:
         condition: service_healthy
+      redis_service:
+        condition: service_healthy
     env_file:
       - .env
     entrypoint: ["make", "start-app"]
@@ -39,3 +41,31 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
+
+  celery_service:
+    build:
+      context: ./celery
+      dockerfile: Dockerfile
+    volumes:
+      - ./call_app:/app/celery
+    env_file:
+      - .env
+    depends_on:
+      redis_service:
+        condition: service_healthy
+    entrypoint: ["make", "start-app"]
+
+  redis_service:
+    build: 
+      context: ./redis
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - ./redis/data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis.conf
