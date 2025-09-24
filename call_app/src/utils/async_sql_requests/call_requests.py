@@ -50,7 +50,7 @@ class AsyncCallRequets:
             users_for_the_call = await session.execute(stmt)
 
             users_for_the_call = users_for_the_call.scalar_one_or_none()
-            employees = []
+            employees = None
             
             if users_for_the_call:
                 employees = users_for_the_call.employees

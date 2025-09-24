@@ -8,7 +8,6 @@ from pydantic import ValidationError
 from .user_callbacks.list_users import list_users_handler
 from .user_callbacks.menu_handler import user_menu_router
 from .schedule.schedule_router import schedule_router
-from tasks.tasks import message_before_call
 import logging
 
 
@@ -25,11 +24,6 @@ async def start_handler(msg: Message):
         id = msg.from_user.id
     )
     
-    message_before_call.apply_async(
-        args = ["some text", 1],
-        countdown = 5
-    )
-
     if not user:
         await msg.answer("вас нет в базе")
         try:

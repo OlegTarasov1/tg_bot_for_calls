@@ -1,10 +1,10 @@
 from aiogram import Bot
-
+import os
 
 async def send_message(
-    token,
-    chat_id,
-    message
+    chat_id: int,
+    message: str,
+    token: str = os.getenv("BOT_TOKEN")
 ):
     bot = Bot(
         token=token
