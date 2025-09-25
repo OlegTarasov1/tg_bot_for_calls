@@ -17,22 +17,27 @@ app = Celery(
 
 @app.task()
 def common_invites(
-    msg: str,
-    call_id: int = 1
+    call_id: int = 3
 ):
-    users_list = asyncio.run(
+    call_with_users = asyncio.run(
         AsyncCallRequets.get_users_for_call(
             call_id = call_id
         )
     )
 
-    for i in users_list:
-        asyncio.run(
-            send_message(
-                message = msg,
-                chat_id = i.chat_id
+    if call_with_users.employees:            
+        for i in call_with_users.employees:
+            msg = f"""
+            У вас назначен созвон.\n\n
+            ссылка: {call_with_users.call_link}\n\n
+            цель созвона: {call_with_users.call_purpose}\n
+            скрам-мастер: {call_with_users.master_name}"""
+            asyncio.run(
+                send_message(
+                    message = msg,
+                    chat_id = i.chat_id
+                )
             )
-        )
 
 
 

@@ -40,7 +40,7 @@ class CallsBase(Base):
     id: Mapped[int] = mapped_column(primary_key = True)
     master_name: Mapped[str] = mapped_column(String(255)) 
     call_link: Mapped[str] = mapped_column(String(255)) 
-    call_purpouse: Mapped[str] = mapped_column(String(255)) 
+    call_purpose: Mapped[str] = mapped_column(String(255)) 
 
     employees: Mapped[list["UsersBase"]] = relationship(
         back_populates = "calls",

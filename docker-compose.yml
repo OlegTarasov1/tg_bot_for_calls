@@ -27,7 +27,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./postgres/init_scripts:/docker-entrypoint-initdb.d
+      # - ./postgres/init_scripts:/docker-entrypoint-initdb.d
       - ./postgres/data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${PG_DB_NAME}

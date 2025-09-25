@@ -31,7 +31,7 @@ class AsyncCallRequets:
             return user_calls
         
     @staticmethod
-    async def get_users_for_call(call_id: int) -> list[UsersBase]:
+    async def get_users_for_call(call_id: int) -> CallsBase:
         async with async_session() as session:
             stmt = (
                 select(
@@ -50,12 +50,12 @@ class AsyncCallRequets:
             users_for_the_call = await session.execute(stmt)
 
             users_for_the_call = users_for_the_call.scalar_one_or_none()
-            employees = None
+            # employees = None
             
-            if users_for_the_call:
-                employees = users_for_the_call.employees
+            # if users_for_the_call:
+            #     employees = users_for_the_call.employees
 
-            return employees
+            return users_for_the_call
 
 
 

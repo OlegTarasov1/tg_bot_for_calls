@@ -2,6 +2,11 @@ from pydantic_settings import BaseSettings
 from pydantic import SecretStr
 import sqlalchemy
 
+from sqlalchemy.ext.asyncio import (
+    create_async_engine,
+    async_sessionmaker
+)
+
 
 class EnvData(BaseSettings):
     PG_HOST: str
@@ -36,3 +41,12 @@ class EnvData(BaseSettings):
         )
 
         return url
+
+
+db_config = EnvData()
+
+async_engine = create_async_engine(
+    db_config.url.render_as_string(hide_password = False)
+)
+
+async_session = async_sessionmaker(async_engine)
