@@ -6,6 +6,7 @@ from sqlalchemy import (
     BigInteger,
     String,
     ForeignKey,
+    Time,
     or_
 )
 from sqlalchemy.orm import relationship
@@ -25,7 +26,7 @@ class UsersBase(Base):
     username: Mapped[str] = mapped_column(String(255)) 
 
     is_admin: Mapped[bool] = mapped_column(default = False)
-    is_scrum: Mapped[bool] = mapped_column(default = False)
+    is_an_employee: Mapped[bool] = mapped_column(default = False)
 
     calls: Mapped[list["CallsBase"]] = relationship(
         back_populates = "employees",
@@ -41,6 +42,7 @@ class CallsBase(Base):
     master_name: Mapped[str] = mapped_column(String(255)) 
     call_link: Mapped[str] = mapped_column(String(255)) 
     call_purpose: Mapped[str] = mapped_column(String(255)) 
+    time: Mapped[datetime | None] = mapped_column(Time, nullable = False)
 
     employees: Mapped[list["UsersBase"]] = relationship(
         back_populates = "calls",

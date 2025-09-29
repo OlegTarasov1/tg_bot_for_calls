@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 5506116e67a2
+Revision ID: 557e77bf3af6
 Revises: 
-Create Date: 2025-09-22 16:31:36.444467
+Create Date: 2025-09-29 04:26:39.850123
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5506116e67a2'
+revision: str = '557e77bf3af6'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,7 +25,8 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('master_name', sa.String(length=255), nullable=False),
     sa.Column('call_link', sa.String(length=255), nullable=False),
-    sa.Column('call_purpouse', sa.String(length=255), nullable=False),
+    sa.Column('call_purpose', sa.String(length=255), nullable=False),
+    sa.Column('time', sa.Time(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -36,7 +37,7 @@ def upgrade() -> None:
     sa.Column('job_title', sa.String(length=255), nullable=True),
     sa.Column('username', sa.String(length=255), nullable=False),
     sa.Column('is_admin', sa.Boolean(), nullable=False),
-    sa.Column('is_scrum', sa.Boolean(), nullable=False),
+    sa.Column('is_an_employee', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users_calls_association',

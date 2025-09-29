@@ -17,7 +17,7 @@ app = Celery(
 
 @app.task()
 def common_invites(
-    call_id: int = 3
+    call_id: int
 ):
     call_with_users = asyncio.run(
         AsyncCallRequets.get_users_for_call(

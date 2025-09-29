@@ -1,12 +1,15 @@
 from sqlalchemy import select
 from schemas.user_pydantic_schemas.user_schema import UserTemplate
 from models.models import UsersBase, UsersCallsAssociation
-from sqlalchemy import select
+from sqlalchemy import select, insert, update
 from sqlalchemy.orm import joinedload
 from utils.useful.sql_sessions import (
     get_db,
     async_session
 )
+from schemas.user_pydantic_schemas.user_schema import UserTemplate
+from aiogram.types import User
+
 
 class AsyncRequestsUser:
 
@@ -38,6 +41,7 @@ class AsyncRequestsUser:
         from_user: UserTemplate
     ) -> UsersBase | None:
         async with async_session() as session:
+
             new_user = UsersBase(
                 **from_user.model_dump()
             )
@@ -45,8 +49,18 @@ class AsyncRequestsUser:
             session.add(new_user)
             await session.commit()
 
-            user_again = await session.refresh(new_user)
+            stmt = (
+                select(
+                    UsersBase
+                )
+                .where(
+                    UsersBase.id == from_user.id
+                )
+            )
             
+            user_again = await session.execute(stmt)
+            user_again = user_again.scalar_one_or_none()
+
             return user_again
         
 
@@ -71,3 +85,56 @@ class AsyncRequestsUser:
             users = users.scalars().all()
 
             return users
+        
+
+    @staticmethod
+    async def update_user_call_group(
+        call_id_to_update: int,
+        user_id: int
+    ) -> None:
+        async with async_session() as session:
+            stmt = (
+                select(
+                    UsersCallsAssociation
+                )
+                .where(
+                    UsersCallsAssociation.call_id == call_id_to_update,
+                    UsersCallsAssociation.user_id == user_id
+                )
+            )
+
+            is_existent = await session.execute(stmt)
+            is_existent = is_existent.scalar_one_or_none()
+
+            if not is_existent:
+                stmt = (
+                    insert(
+                        UsersCallsAssociation
+                    )
+                    .values(
+                        call_id = call_id_to_update,
+                        user_id = user_id
+                    )
+                )
+
+                await session.execute(stmt)
+                await session.commit()
+
+
+    @staticmethod
+    async def new_employee(user_id: int) -> None:
+        async with async_session() as session:
+            stmt = (
+                update(
+                    UsersBase
+                )
+                .values(
+                    is_an_employee = True
+                )
+                .where(
+                    UsersBase.id == user_id
+                )
+            )
+            
+            await session.execute(stmt)
+            await session.commit()

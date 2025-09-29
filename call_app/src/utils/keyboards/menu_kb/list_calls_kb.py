@@ -1,0 +1,52 @@
+from schemas.cb_schemas.menu_schemas.retreive_call_schema import RetreiveCallCB
+from schemas.cb_schemas.menu_schemas.get_calls_schema import CallsCB
+from aiogram.utils.keyboard import InlineKeyboardBuilder 
+from aiogram.types import InlineKeyboardButton
+from models.models import UsersBase
+
+
+async def list_calls_for_user(
+    calls: UsersBase,
+    page: int,
+    is_admin: bool = False
+):
+    kb = InlineKeyboardBuilder()
+    
+    for i in calls.calls:
+        kb.add(
+            InlineKeyboardButton(
+                text = i.call_purpose,
+                callback_data = RetreiveCallCB(
+                    user_id = calls.id,
+                    call_id = i.id
+                ).pack()
+            )
+        )
+    if page > 1:
+        kb.add(
+            [
+                InlineKeyboardButton(
+                    text = "Назад",
+                    callback_data = CallsCB(
+                        page = page - 1
+                    ).pack()
+                ),
+                InlineKeyboardButton(
+                    text = "Назад",
+                    callback_data = CallsCB(
+                        page = page + 1
+                    ).pack()
+                )
+            ]
+        ) 
+    else:
+        kb.add(
+            InlineKeyboardButton(
+                text = "Назад",
+                callback_data = CallsCB(
+                    page = page + 1
+                ).pack()
+            ) 
+        )
+
+    return kb.adjust(1).as_markup()
