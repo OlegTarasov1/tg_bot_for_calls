@@ -7,9 +7,6 @@ from schemas.user_pydantic_schemas.user_schema import UserTemplate
 from pydantic import ValidationError
 from utils.keyboards.kb_temp import temp_kb
 from aiogram.fsm.context import FSMContext
-from .user_callbacks.list_users import list_users_handler
-from .user_callbacks.menu_handler import user_menu_router
-from .schedule.schedule_router import schedule_router
 from schemas.fsm_schemas.call_schedule import ScheduleState
 from views.basic.schedule.another_schedule import schedule_setting_handler
 import logging
@@ -18,12 +15,9 @@ import logging
 basic_router = Router()
 
 basic_router.include_router(schedule_setting_handler)
-basic_router.include_router(list_users_handler)
-basic_router.include_router(user_menu_router)
-basic_router.include_router(schedule_router)
 
 
-@basic_router.message(Command("test"))
+@basic_router.message(Command("set_call"))
 async def start_handler(
     msg: Message,
     state: FSMContext

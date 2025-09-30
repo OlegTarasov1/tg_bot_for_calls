@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from utils.async_sql_requests.user_requests import AsyncRequestsUser
 from aiogram.types import Message
 from aiogram import Router
-
+import logging
 
 schedule_setting_handler = Router()
 
@@ -12,7 +12,6 @@ schedule_setting_handler = Router()
 async def set_schedule(msg: Message, state: FSMContext):
     schedule = state.get_data()
     await state.clear()
-
     if schedule == "Утро (8:00)":
         await AsyncRequestsUser.update_user_call_group(
             user_id = msg.from_user.id,
@@ -22,7 +21,7 @@ async def set_schedule(msg: Message, state: FSMContext):
     elif schedule == "Вечер (18:00)":
         await AsyncRequestsUser.update_user_call_group(
             user_id = msg.from_user.id,
-            call_id_to_update = 3
+            call_id_to_update = 1
         )
         await msg.answer("Вемя установлено на 18:00 успешно.")
     else:

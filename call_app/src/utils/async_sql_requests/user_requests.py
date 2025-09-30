@@ -7,6 +7,7 @@ from utils.useful.sql_sessions import (
     get_db,
     async_session
 )
+import logging
 from schemas.user_pydantic_schemas.user_schema import UserTemplate
 from aiogram.types import User
 
@@ -92,6 +93,7 @@ class AsyncRequestsUser:
         call_id_to_update: int,
         user_id: int
     ) -> None:
+        logging.warning(call_id_to_update)
         async with async_session() as session:
             stmt = (
                 select(

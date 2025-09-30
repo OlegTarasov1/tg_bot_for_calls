@@ -15,7 +15,7 @@ async def list_calls_for_user(
     for i in calls.calls:
         kb.add(
             InlineKeyboardButton(
-                text = i.call_purpose,
+                text = f"{i.time} | {i.call_purpose}",
                 callback_data = RetreiveCallCB(
                     user_id = calls.id,
                     call_id = i.id

@@ -18,7 +18,7 @@ async def set_schedule(msg: Message, state: FSMContext):
     if schedule == "Утро (8:00)":
         await AsyncRequestsUser.update_user_call_group(
             user_id = msg.from_user.id,
-            call_id_to_update = 2
+            call_id_to_update = 1
         )
         await msg.answer(
             "Время установлено на 8:00 успешно.",
@@ -27,7 +27,7 @@ async def set_schedule(msg: Message, state: FSMContext):
     elif schedule == "Вечер (18:00)":
         await AsyncRequestsUser.update_user_call_group(
             user_id = msg.from_user.id,
-            call_id_to_update = 3
+            call_id_to_update = 2
         )
         await msg.answer(
             "Вемя установлено на 18:00 успешно.",
