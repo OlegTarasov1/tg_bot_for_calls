@@ -8,6 +8,7 @@ from models.models import UsersBase
 async def list_calls_for_user(
     calls: UsersBase,
     page: int,
+    page_limit: int = 6,
     is_admin: bool = False
 ):
     kb = InlineKeyboardBuilder()
@@ -24,29 +25,21 @@ async def list_calls_for_user(
         )
     if page > 1:
         kb.add(
-            [
-                InlineKeyboardButton(
-                    text = "Назад",
-                    callback_data = CallsCB(
-                        page = page - 1
-                    ).pack()
-                ),
-                InlineKeyboardButton(
-                    text = "Назад",
-                    callback_data = CallsCB(
-                        page = page + 1
-                    ).pack()
-                )
-            ]
-        ) 
-    else:
-        kb.add(
             InlineKeyboardButton(
                 text = "Назад",
                 callback_data = CallsCB(
+                    page = page - 1
+                ).pack()
+            )
+        ) 
+    if len(calls.calls) - ( page * page_limit + page_limit) > 0:
+        kb.add(
+            InlineKeyboardButton(
+                text = "Вперёд",
+                callback_data = CallsCB(
                     page = page + 1
                 ).pack()
-            ) 
+            )
         )
 
     return kb.adjust(1).as_markup()
