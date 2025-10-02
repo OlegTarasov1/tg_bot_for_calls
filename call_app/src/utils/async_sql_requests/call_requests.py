@@ -1,10 +1,11 @@
+import logging
 from utils.useful.sql_sessions import (
     get_db,
     async_session
 )
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
-from models.models import UsersBase, CallsBase
+from models.models import UsersBase, CallsBase, UsersCallsAssociation
 
 
 class AsyncCallRequets:
@@ -50,12 +51,23 @@ class AsyncCallRequets:
             users_for_the_call = await session.execute(stmt)
 
             users_for_the_call = users_for_the_call.scalar_one_or_none()
-            # employees = None
-            
-            # if users_for_the_call:
-            #     employees = users_for_the_call.employees
 
             return users_for_the_call
 
-
+    @staticmethod
+    async def truncate_users_calls(
+        user_id: int
+    ):
+        logging.warning(user_id)
+        async with async_session() as session:
+            stmt = (
+                delete(
+                    UsersCallsAssociation
+                )
+                .where(
+                    UsersCallsAssociation.user_id == user_id
+                )
+            )
+            await session.execute(stmt)
+            await session.commit()
 
