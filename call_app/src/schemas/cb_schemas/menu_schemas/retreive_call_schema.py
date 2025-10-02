@@ -3,10 +3,9 @@ from pydantic import Field
 
 class RetreiveCallCB(
     CallbackData,
-    prefix = "retreive_call",
-    sep = "!!"
+    prefix = "retreive_call"
 ):
-    func: str = "call_retreival"
+    action: str
     user_id: int = Field(ge = 1)
     call_id: int = Field(ge = 1)
 

@@ -18,6 +18,7 @@ async def list_calls_for_user(
             InlineKeyboardButton(
                 text = f"{i.time.strftime("%H:%M")} | {i.call_purpose}",
                 callback_data = RetreiveCallCB(
+                    action = "retreive_more",
                     user_id = calls.id,
                     call_id = i.id
                 ).pack()

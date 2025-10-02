@@ -3,8 +3,10 @@ from aiogram.types import CallbackQuery
 from aiogram import Router, F
 from utils.async_sql_requests.call_requests import AsyncCallRequets
 from utils.keyboards.menu_kb.list_calls_kb import list_calls_for_user
+from views.admin_pannel.handle_callbacks.retreive_user.user_retreival import expand_user_router
 
 cb_calls_retreival_router = Router()
+cb_calls_retreival_router.include_router(expand_user_router)
 
 
 @cb_calls_retreival_router.callback_query(CallsCB.filter())

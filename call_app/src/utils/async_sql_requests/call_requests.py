@@ -10,6 +10,43 @@ from models.models import UsersBase, CallsBase, UsersCallsAssociation
 
 class AsyncCallRequets:
     @staticmethod
+    async def delete_user_call_connection(
+        user_id: int,
+        call_id: int
+    ) -> None:
+        async with async_session() as session:
+            stmt = (
+                delete(
+                    UsersCallsAssociation
+                )
+                .where(
+                    UsersCallsAssociation.call_id == call_id,
+                    UsersCallsAssociation.user_id == user_id
+                )
+            )
+
+            await session.execute(stmt)
+            await session.commit()
+
+    @staticmethod
+    async def retreive_call(
+        call_id: int
+    ) -> CallsBase:
+        async with async_session() as session:
+            stmt = (
+                select(
+                    CallsBase
+                )
+                .where(
+                    CallsBase.id == call_id
+                )
+            )
+            call = await session.execute(stmt)
+            call = call.scalar_one_or_none()
+
+            return call
+
+    @staticmethod
     async def get_calls_for_user(id: int) -> UsersBase:
         async with async_session() as session:
             stmt = (

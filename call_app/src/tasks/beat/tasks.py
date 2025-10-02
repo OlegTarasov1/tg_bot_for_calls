@@ -23,8 +23,8 @@ app.conf.beat_schedule = {
     "daily_morning_call_invites": {
         "task": "tasks.worker.tasks.common_invites",
         "schedule": crontab(
-            hour = "9",
-            minute="0",
+            hour = "8",
+            minute="5",
             day_of_week = "*"
         ),
         "args": (
