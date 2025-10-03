@@ -11,4 +11,4 @@ async def go_back_to_menue(
             callback_data = CallsCB(page = 1).pack()
         )
     else:
-        return
+        return None

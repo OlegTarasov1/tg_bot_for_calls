@@ -24,7 +24,7 @@ app.conf.beat_schedule = {
         "task": "tasks.worker.tasks.common_invites",
         "schedule": crontab(
             hour = "8",
-            minute="5",
+            minute="0",
             day_of_week = "*"
         ),
         "args": (
@@ -34,8 +34,8 @@ app.conf.beat_schedule = {
     "daily_evening_call_invites": {
         "task": "tasks.worker.tasks.common_invites",
         "schedule": crontab(
-            hour = "18",
-            minute="0",
+            hour = "15",
+            minute="5",
             day_of_week = "*"
         ),
         "args": (

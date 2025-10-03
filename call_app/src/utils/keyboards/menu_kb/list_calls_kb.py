@@ -42,5 +42,11 @@ async def list_calls_for_user(
                 ).pack()
             )
         )
+    kb.add(
+        InlineKeyboardButton(
+            text = "Меню",
+            callback_data = "menu"
+        )
+    )
 
     return kb.adjust(1).as_markup()

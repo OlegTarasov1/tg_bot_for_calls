@@ -14,6 +14,12 @@ employee_menu = InlineKeyboardMarkup(
                     page = 1
                 ).pack()
             )
+        ],
+        [
+            InlineKeyboardButton(
+                text = "Установить новый созвон",
+                callback_data = "setup_new_call"
+            )
         ]
     ]
 )
