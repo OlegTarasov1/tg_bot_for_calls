@@ -1,7 +1,7 @@
 from schemas.cb_schemas.menu_schemas.retreive_call_schema import RetreiveCallCB
+from utils.keyboards.menu_kb.employee_kb import employee_menu
 from aiogram.utils.keyboard import InlineKeyboardBuilder 
 from aiogram.types import InlineKeyboardButton
-from utils.keyboards.menu_kb.employee_kb import employee_menu
 
 
 async def get_user_expended_kb(
@@ -20,7 +20,11 @@ async def get_user_expended_kb(
         ),
         InlineKeyboardButton(
             text = "Перенести",
-            callback_data = "shutter"
+            callback_data = RetreiveCallCB(
+                action = "reschedule",
+                user_id = user_id,
+                call_id = call_id 
+            ).pack()
         ),
         InlineKeyboardButton(
             text = "Вернуться в меню",

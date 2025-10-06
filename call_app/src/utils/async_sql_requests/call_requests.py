@@ -3,7 +3,7 @@ from utils.useful.sql_sessions import (
     get_db,
     async_session
 )
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, and_
 from sqlalchemy.orm import selectinload
 from models.models import UsersBase, CallsBase, UsersCallsAssociation
 
@@ -92,8 +92,9 @@ class AsyncCallRequets:
             return users_for_the_call
 
     @staticmethod
-    async def truncate_users_calls(
-        user_id: int
+    async def delete_call_by_ids(
+        user_id: int,
+        call_id: int
     ):
         logging.warning(user_id)
         async with async_session() as session:
@@ -102,7 +103,10 @@ class AsyncCallRequets:
                     UsersCallsAssociation
                 )
                 .where(
-                    UsersCallsAssociation.user_id == user_id
+                    and_(
+                        UsersCallsAssociation.user_id == user_id,
+                        UsersCallsAssociation.call_id == call_id
+                    )
                 )
             )
             await session.execute(stmt)

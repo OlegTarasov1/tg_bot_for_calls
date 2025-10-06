@@ -15,11 +15,7 @@ async def set_schedule(msg: Message, state: FSMContext):
 
     schedule = msg.text.strip()
     await state.clear()
-
-    await AsyncCallRequets.truncate_users_calls(
-        user_id = msg.from_user.id
-    )
-
+    
     if schedule == "Утро (8:00)":
         await AsyncRequestsUser.update_user_call_group(
             user_id = msg.from_user.id,
