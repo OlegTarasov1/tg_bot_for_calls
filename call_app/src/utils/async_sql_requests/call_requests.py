@@ -112,3 +112,10 @@ class AsyncCallRequets:
             await session.execute(stmt)
             await session.commit()
 
+    # @staticmethod
+    # async def create_new_call(
+    #     user_id: int,
+    #     call_purpose: str | None,
+
+    # ):
+    #     pass

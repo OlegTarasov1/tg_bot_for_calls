@@ -22,6 +22,5 @@ async def new_call(
     await state.set_state(ScheduleState.schedule)
 
     await callback_data.message.answer(
-        "К какому созвону вы бы хотели присоединиться?",
-        reply_markup = temp_kb
+        "Напишите время для оповещений о созонах в промежутке: 7:00-12:00, или 17:00-23:00."
     )

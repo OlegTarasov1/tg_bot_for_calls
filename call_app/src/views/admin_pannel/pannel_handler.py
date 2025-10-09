@@ -5,10 +5,12 @@ from aiogram import Router
 from views.admin_pannel.handle_callbacks.retreive_calls import cb_calls_retreival_router
 from utils.keyboards.menu_kb.employee_kb import employee_menu
 from utils.keyboards.menu_kb.admin_kb import admin_menu
+from views.admin_pannel.individual_calls.individual_calls_declare import individual_call_handler
 
 
 admin_pannel_router = Router()
 admin_pannel_router.include_router(cb_calls_retreival_router)
+admin_pannel_router.include_router(individual_call_handler)
 
 
 @admin_pannel_router.message(Command("start"))
