@@ -19,7 +19,7 @@ async def new_call(
 ):
     await callback_data.message.delete()
 
-    await state.set_state(ScheduleState.schedule)
+    await state.set_state(ScheduleState.schedule_time)
 
     await callback_data.message.answer(
         "Напишите время для оповещений о созонах в промежутке: 7:00-12:00, или 17:00-23:00."

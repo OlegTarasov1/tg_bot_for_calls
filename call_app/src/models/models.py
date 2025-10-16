@@ -6,6 +6,7 @@ from sqlalchemy import (
     BigInteger,
     String,
     ForeignKey,
+    JSON,
     Time,
     or_
 )
@@ -43,6 +44,8 @@ class CallsBase(Base):
     call_link: Mapped[str] = mapped_column(String(255)) 
     call_purpose: Mapped[str] = mapped_column(String(255)) 
     time: Mapped[datetime | None] = mapped_column(Time, nullable = False)
+    call_invoke_id: Mapped[str | None] = mapped_column(nullable = True)
+    days_of_the_week: Mapped[list[str] | None] = mapped_column(JSON, nullable = True)
 
     employees: Mapped[list["UsersBase"]] = relationship(
         back_populates = "calls",
@@ -59,5 +62,5 @@ class UsersCallsAssociation(Base):
     call_id: Mapped[int] = mapped_column(ForeignKey("calls.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     
-    time: Mapped[datetime | None] = mapped_column(Time, nullable = True) 
-    task_id: Mapped[str | None] = mapped_column(nullable = True)
+    # time: Mapped[datetime | None] = mapped_column(Time, nullable = True)
+    # task_id: Mapped[str | None] = mapped_column(nullable = True)

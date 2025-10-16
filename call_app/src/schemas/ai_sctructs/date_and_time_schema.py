@@ -6,6 +6,22 @@ from zoneinfo import ZoneInfo
 class DateAndTimeSchema(BaseModel):
     call_time: time | None = None
     call_date: date | None = None
+    call_link: str | None = None
+    call_purpose: str | None = None
+    user_data: str | None = None
+    
+    
+    @field_validator("user_data", mode = "before")
+    def validate_user_data(cls, v):
+        return cls.validate_none(v)
+    
+    @field_validator("call_link", mode = "before")
+    def validate_call_link(cls, v):
+        return cls.validate_none(v)
+
+    @field_validator("call_purpose", mode = "before")
+    def validate_call_purpose(cls, v):
+        return cls.validate_none(v)
 
     @field_validator("call_date", mode = "before")
     def validate_call_date(cls, v):
@@ -14,6 +30,7 @@ class DateAndTimeSchema(BaseModel):
     @field_validator("call_time", mode = "before")
     def validate_call_time(cls, v):
         return cls.validate_none(v)
+
 
     @classmethod
     def validate_none(cls, value):
