@@ -19,30 +19,6 @@ app = Celery(
 
 app.conf.timezone = "Europe/Moscow"
 
-# app.conf.beat_schedule = {
-#     "daily_morning_call_invites": {
-#         "task": "tasks.worker.tasks.common_invites",
-#         "schedule": crontab(
-#             hour = "8",
-#             minute="0",
-#             day_of_week = "mon-fri"
-#         ),
-#         "args": (
-#             1,
-#         )
-#     },
-#     "daily_evening_call_invites": {
-#         "task": "tasks.worker.tasks.common_invites",
-#         "schedule": crontab(
-#             hour = "18",
-#             minute="0",
-#             day_of_week = "mon-fri"
-#         ),
-#         "args": (
-#             2,
-#         )
-#     }
-# }
 
 app.conf.beat_schedule = {
     "daily_morning_call_invites": {

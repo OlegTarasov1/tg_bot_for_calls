@@ -10,6 +10,7 @@ from sqlalchemy import (
     Time,
     or_
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .base import Base
@@ -45,7 +46,7 @@ class CallsBase(Base):
     call_purpose: Mapped[str] = mapped_column(String(255)) 
     time: Mapped[datetime | None] = mapped_column(Time, nullable = False)
     call_invoke_id: Mapped[str | None] = mapped_column(nullable = True)
-    days_of_the_week: Mapped[list[str] | None] = mapped_column(JSON, nullable = True)
+    days_of_the_week: Mapped[list[str] | None] = mapped_column(JSONB, nullable = True)
 
     employees: Mapped[list["UsersBase"]] = relationship(
         back_populates = "calls",

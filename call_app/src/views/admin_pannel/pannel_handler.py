@@ -23,7 +23,7 @@ async def get_command_pannel(
     if user_data.is_admin:
         await msg.answer(
             "Админ панель:",
-            reply_markup = admin_menu
+            reply_markup = employee_menu
         )
     elif user_data.is_an_employee:
         await msg.answer(

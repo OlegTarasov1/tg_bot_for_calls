@@ -10,9 +10,8 @@ from aiogram.fsm.context import FSMContext
 from schemas.fsm_schemas.call_schedule import ScheduleState
 from tasks.worker.tasks import send_message_to_user
 from uuid import uuid4
-from datetime import datetime, timedelta, time as time_dt
+from datetime import datetime, time as time_dt
 import logging
-from celery.schedules import crontab
 from zoneinfo import ZoneInfo
 from schemas.raw_templates.template_call import get_call_text_template
 
@@ -66,7 +65,7 @@ async def set_schedule(msg: Message, state: FSMContext):
             time = time_dt(hours, minutes)
             await state.update_data({"time": time})
             await state.set_state(ScheduleState.schedule_date)
-            await msg.answer("Отправьте дату в формате:\n<формат>")
+            await msg.answer("Отправьте дни недели как цифры через запятые:\n0 - понедельник\n1 - вторник\n2 - среда\n\nНу или введите 'отмена'")
         except TypeError:
             # await state.clear()
             await msg.answer("Не корректный формат, попробуйте снова.")
@@ -84,48 +83,48 @@ async def schedule_date(msg: Message, state: FSMContext):
         chat_id = msg.chat.id
         meta_data = await state.get_data()
 
-        # try:
-        moscow_tz = ZoneInfo("Europe/Moscow")
-        now_moscow = datetime.now(moscow_tz)
-        dates_list = msg.text.strip().split(", ")
-        call_invoke_id = None
-        eta_time = datetime.combine(
-            now_moscow.date(),
-            meta_data.get('time'),
-            tzinfo = moscow_tz
-        )
-
-        logging.warning(eta_time)
-
-        if str(now_moscow.weekday()) in dates_list and now_moscow <= eta_time:
-            logging.warning("ok, it passed the filter")
-            call_invoke_id = f"task_{uuid4()}"
-            send_message_to_user.apply_async(
-                args = [
-                    get_call_text_template(meta_data['time']),
-                    chat_id
-                ],
-                eta = eta_time
+        try:
+            moscow_tz = ZoneInfo("Europe/Moscow")
+            now_moscow = datetime.now(moscow_tz)
+            dates_list = msg.text.strip().split(", ")
+            call_invoke_id = None
+            eta_time = datetime.combine(
+                now_moscow.date(),
+                meta_data.get('time'),
+                tzinfo = moscow_tz
             )
+
             logging.warning(eta_time)
 
-        new_call = await AsyncCallRequets.add_call(
-            call_invoke_id = call_invoke_id,
-            master_name = "Test",
-            call_link = "https://test",
-            call_purpose = "test",
-            time = meta_data['time'],
-            days_of_the_week = dates_list
-        )
-        await AsyncRequestsUser.update_user_call_group(
-            call_id_to_update = new_call.id,
-            user_id = msg.from_user.id
-        )
+            if str(now_moscow.weekday()) in dates_list and now_moscow <= eta_time:
+                logging.warning("ok, it passed the filter")
+                call_invoke_id = f"task_{uuid4()}"
+                send_message_to_user.apply_async(
+                    args = [
+                        get_call_text_template(meta_data['time']),
+                        chat_id
+                    ],
+                    eta = eta_time
+                )
+                logging.warning(eta_time)
 
-        await msg.answer(f"Хорошо, всё устанновлено: {new_call.time} | {new_call.call_purpose}")
-        await state.clear()
-        # except:
-        #     pass
+            new_call = await AsyncCallRequets.add_call(
+                call_invoke_id = call_invoke_id,
+                master_name = "Test",
+                call_link = "https://test",
+                call_purpose = "test",
+                time = meta_data['time'],
+                days_of_the_week = dates_list
+            )
+            await AsyncRequestsUser.update_user_call_group(
+                call_id_to_update = new_call.id,
+                user_id = msg.from_user.id
+            )
+
+            await msg.answer(f"Хорошо, всё устанновлено: {new_call.time} | {new_call.call_purpose}")
+            await state.clear()
+        except:
+            await msg.answer("некорректный ввод. введите через запятую:\n0 - понедельник,\n1 - втотрник,\n2 - среда...")
 
 
 

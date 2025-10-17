@@ -35,12 +35,11 @@ async def load_invites_today_async(
 ):
     today_calls = await AsyncCallRequets.get_todays_calls(date)
     for i in today_calls:
-        asyncio.create_task(
-            send_message_to_user(
+        for j in i.employees:
+            send_message_to_user.delay(
                 get_call_text_template(datetime.now().time()),
-                i.employees.chat_id
+                j.chat_id
             )
-        )
 
 
 @app.task()

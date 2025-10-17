@@ -24,7 +24,7 @@ employee_menu = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text = "Установить индивидуальный созвон",
-                callback_data = "set_individual_call"
+                callback_data = "shutter"
             )
         ]
     ]
