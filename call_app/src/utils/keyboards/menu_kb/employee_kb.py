@@ -20,6 +20,12 @@ employee_menu = InlineKeyboardMarkup(
                 text = "Установить новый созвон",
                 callback_data = "setup_new_call"
             )
+        ],
+        [
+            InlineKeyboardButton(
+                text = "Установить индивидуальный созвон",
+                callback_data = "shutter"
+            )
         ]
     ]
 )

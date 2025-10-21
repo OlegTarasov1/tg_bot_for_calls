@@ -16,3 +16,4 @@ async def send_message(
     )
     
     await bot.session.close()
+

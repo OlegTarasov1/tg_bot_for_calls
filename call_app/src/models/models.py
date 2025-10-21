@@ -6,9 +6,11 @@ from sqlalchemy import (
     BigInteger,
     String,
     ForeignKey,
+    JSON,
     Time,
     or_
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .base import Base
@@ -43,6 +45,8 @@ class CallsBase(Base):
     call_link: Mapped[str] = mapped_column(String(255)) 
     call_purpose: Mapped[str] = mapped_column(String(255)) 
     time: Mapped[datetime | None] = mapped_column(Time, nullable = False)
+    call_invoke_id: Mapped[str | None] = mapped_column(nullable = True)
+    days_of_the_week: Mapped[list[str] | None] = mapped_column(JSONB, nullable = True)
 
     employees: Mapped[list["UsersBase"]] = relationship(
         back_populates = "calls",
@@ -56,5 +60,7 @@ class UsersCallsAssociation(Base):
 
     id: Mapped[int] = mapped_column(primary_key = True)
 
-    call_id: Mapped[int] = mapped_column(ForeignKey("calls.id"))
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    call_id: Mapped[int] = mapped_column(ForeignKey("calls.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    
+

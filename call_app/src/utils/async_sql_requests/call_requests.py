@@ -6,6 +6,7 @@ from utils.useful.sql_sessions import (
 from sqlalchemy import select, delete, and_
 from sqlalchemy.orm import selectinload
 from models.models import UsersBase, CallsBase, UsersCallsAssociation
+from datetime import datetime
 
 
 class AsyncCallRequets:
@@ -28,6 +29,7 @@ class AsyncCallRequets:
             await session.execute(stmt)
             await session.commit()
 
+
     @staticmethod
     async def retreive_call(
         call_id: int
@@ -45,6 +47,7 @@ class AsyncCallRequets:
             call = call.scalar_one_or_none()
 
             return call
+
 
     @staticmethod
     async def get_calls_for_user(id: int) -> UsersBase:
@@ -68,8 +71,11 @@ class AsyncCallRequets:
 
             return user_calls
         
+
     @staticmethod
-    async def get_users_for_call(call_id: int) -> CallsBase:
+    async def get_users_for_call(
+        call_id: int
+    ) -> CallsBase:
         async with async_session() as session:
             stmt = (
                 select(
@@ -92,6 +98,23 @@ class AsyncCallRequets:
             return users_for_the_call
 
     @staticmethod
+    async def delete_call_by_id(
+        id: int
+    ) -> None:
+        async with async_session() as session:
+            stmt = (
+                delete(
+                    CallsBase
+                )
+                .where(
+                    CallsBase.id == id
+                )
+            )
+            await session.execute(stmt)
+            await session.commit()
+
+
+    @staticmethod
     async def delete_call_by_ids(
         user_id: int,
         call_id: int
@@ -111,4 +134,57 @@ class AsyncCallRequets:
             )
             await session.execute(stmt)
             await session.commit()
+
+
+    @staticmethod
+    async def add_call(
+        call_invoke_id: str,
+        master_name: int | None,
+        call_link: str | None,
+        call_purpose: str | None,
+        time: datetime | None,
+        days_of_the_week: list[str] | None
+    ) -> CallsBase:
+        async with async_session() as session:
+            new_call = CallsBase(
+                master_name = master_name,
+                call_link = call_link,
+                call_invoke_id = call_invoke_id,
+                call_purpose = call_purpose,
+                time = time,
+                days_of_the_week = days_of_the_week
+            )
+            session.add(new_call)
+            await session.commit()
+            
+            await session.refresh(new_call)
+
+            return new_call
+
+
+    @staticmethod
+    async def get_todays_calls(
+        week_date: str
+    ) -> list[CallsBase]:
+        async with async_session() as session:
+            stmt = (
+                select(
+                    CallsBase
+                )
+                .options(
+                    selectinload(
+                        CallsBase.employees
+                    )
+                )
+                .where(
+                    CallsBase.days_of_the_week.contains([week_date])
+                )
+            )
+            calls = await session.execute(stmt)
+            calls = calls.unique().scalars().all()
+
+            return calls
+            
+
+
 

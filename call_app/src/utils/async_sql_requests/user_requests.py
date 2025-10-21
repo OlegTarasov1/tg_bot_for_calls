@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, func, text, desc
 from schemas.user_pydantic_schemas.user_schema import UserTemplate
 from models.models import UsersBase, UsersCallsAssociation
 from sqlalchemy import select, insert, update
@@ -140,3 +140,71 @@ class AsyncRequestsUser:
             
             await session.execute(stmt)
             await session.commit()
+
+
+    # @staticmethod
+    # async def get_user_by_creds(
+    #     user_creds: str
+    # ) -> UsersBase:
+    #     async with async_session() as session:
+    #         tsvector = func.to_tsvector(
+    #             "russian",
+    #             (
+    #                 UsersBase.first_name + " " +
+    #                 UsersBase.last_name + " " +
+    #                 func.coalesce(UsersBase.username, "") + " " +
+    #                 func.coalesce(UsersBase.job_title, "")
+    #             )
+    #         )
+
+    #         tsquery = func.plainto_tsquery("simple", user_creds)
+
+    #         rank = func.ts_rank(tsvector, tsquery)
+
+    #         stmt = (
+    #             select(UsersBase, rank.label("rank"))
+    #             .where(tsvector.op("@@")(tsquery))
+    #             .order_by(desc(rank))
+    #             .limit(1)
+    #         )
+
+    #         result = await session.execute(stmt)
+    #         result = result.scalar_one_or_none()
+            
+    #         return result
+
+    @staticmethod
+    async def get_user_by_creds(user_creds: str) -> UsersBase | None:
+        async with async_session() as session:
+            text_fields = func.concat_ws(
+                ' ',
+                func.coalesce(UsersBase.first_name, ''),
+                func.coalesce(UsersBase.last_name, ''),
+                func.coalesce(UsersBase.username, ''),
+                func.coalesce(UsersBase.job_title, '')
+            )
+
+            tsvector = func.to_tsvector('russian', text_fields).op('||')(
+                func.to_tsvector('english', text_fields)
+            )
+
+            tsquery = func.websearch_to_tsquery('russian', user_creds).op('||')(
+                func.websearch_to_tsquery('english', user_creds)
+            )
+
+            rank = func.ts_rank(tsvector, tsquery)
+
+            stmt = (
+                select(UsersBase, rank.label("rank"))
+                .where(tsvector.op("@@")(tsquery))
+                .order_by(desc(rank))
+                .limit(1)
+            )
+
+            result = await session.execute(stmt)
+            row = result.first()
+
+            if row:
+                user, _ = row
+                return user
+            return None

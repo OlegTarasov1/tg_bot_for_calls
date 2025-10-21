@@ -19,9 +19,8 @@ async def new_call(
 ):
     await callback_data.message.delete()
 
-    await state.set_state(ScheduleState.schedule)
+    await state.set_state(ScheduleState.schedule_time)
 
     await callback_data.message.answer(
-        "К какому созвону вы бы хотели присоединиться?",
-        reply_markup = temp_kb
+        "Напишите время для оповещений о созонах в формате: '8:00' (час:минута)."
     )

@@ -7,21 +7,22 @@ from schemas.user_pydantic_schemas.user_schema import UserTemplate
 from pydantic import ValidationError
 from utils.keyboards.kb_temp import temp_kb
 from aiogram.fsm.context import FSMContext
-from schemas.fsm_schemas.call_schedule import ScheduleState
+from schemas.fsm_schemas.call_reschedule import RescheduleState
 from tasks.worker.tasks import send_message_to_user
 from uuid import uuid4
 from datetime import datetime, time as time_dt
 import logging
 from zoneinfo import ZoneInfo
 from schemas.raw_templates.template_call import get_call_text_template
+from celery.result import AsyncResult
+from tasks.worker.tasks import app
 
 
 
-basic_router = Router()
+rescheduling_router = Router()
 
 
-
-@basic_router.message(ScheduleState.schedule_time)
+@rescheduling_router.message(RescheduleState.schedule_time)
 async def set_schedule(msg: Message, state: FSMContext):
     receipt = msg.text.strip()
     
@@ -33,14 +34,15 @@ async def set_schedule(msg: Message, state: FSMContext):
             hours, minutes = map(int, receipt.strip().split(":"))
             time = time_dt(hours, minutes)
             await state.update_data({"time": time})
-            await state.set_state(ScheduleState.schedule_date)
+            await state.set_state(RescheduleState.schedule_date)
             await msg.answer("Отправьте дни недели как цифры через запятые:\n0 - понедельник\n1 - вторник\n2 - среда\n\nНу или введите 'отмена'")
         except TypeError:
+            # await state.clear()
             await msg.answer("Не корректный формат, попробуйте снова.")
 
 
 
-@basic_router.message(ScheduleState.schedule_date)
+@rescheduling_router.message(RescheduleState.schedule_date)
 async def schedule_date(msg: Message, state: FSMContext):
     receipt = msg.text.strip()
     
@@ -50,6 +52,12 @@ async def schedule_date(msg: Message, state: FSMContext):
     else:
         chat_id = msg.chat.id
         meta_data = await state.get_data()
+
+        call_data = await AsyncCallRequets.retreive_call(call_id = meta_data.get("id"))
+        await AsyncCallRequets.delete_call_by_id(id = meta_data.get("id"))
+        if call_data.call_invoke_id:
+            AsyncResult(id = call_data.call_invoke_id, backend = app).revoke(terminate = True, signal = "SIGKILL")
+
 
         try:
             moscow_tz = ZoneInfo("Europe/Moscow")
@@ -63,14 +71,14 @@ async def schedule_date(msg: Message, state: FSMContext):
             )
 
             if str(now_moscow.weekday()) in dates_list and now_moscow <= eta_time:
-                call_invoke_id = f"task_{uuid4()}"
-                send_message_to_user.apply_async(
+                call_metadata = send_message_to_user.apply_async(
                     args = [
                         get_call_text_template(meta_data['time']),
                         chat_id
                     ],
                     eta = eta_time
                 )
+                call_invoke_id = call_metadata.id
                 logging.warning(eta_time)
 
             new_call = await AsyncCallRequets.add_call(
@@ -93,40 +101,3 @@ async def schedule_date(msg: Message, state: FSMContext):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # if receipt == "Утро (8:00)":
-    #     await AsyncRequestsUser.update_user_call_group(
-    #         user_id = msg.from_user.id,
-    #         call_id_to_update = 1
-    #     )
-    #     await msg.answer(
-    #         "Время установлено на 8:00 успешно.",
-    #         reply_markup = ReplyKeyboardRemove()
-    #     )
-    # elif receipt == "Вечер (18:00)":
-    #     await AsyncRequestsUser.update_user_call_group(
-    #         user_id = msg.from_user.id,
-    #         call_id_to_update = 2
-    #     )
-    #     await msg.answer(
-    #         "Вемя установлено на 18:00 успешно.",
-    #         reply_markup = ReplyKeyboardRemove()
-    #     )
-    # else:
-    #     await msg.answer(
-    #         "Что-то пошло не так, время не было изменино.",
-    #         reply_markup = ReplyKeyboardRemove()
-    #     )

@@ -10,7 +10,7 @@ import logging
 choice_router = Router()
 
 
-@choice_router.message(ScheduleState.schedule)
+@choice_router.message(ScheduleState.schedule_time)
 async def set_schedule(msg: Message, state: FSMContext):
 
     schedule = msg.text.strip()
