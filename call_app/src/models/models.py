@@ -60,8 +60,7 @@ class UsersCallsAssociation(Base):
 
     id: Mapped[int] = mapped_column(primary_key = True)
 
-    call_id: Mapped[int] = mapped_column(ForeignKey("calls.id"))
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    call_id: Mapped[int] = mapped_column(ForeignKey("calls.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     
-    # time: Mapped[datetime | None] = mapped_column(Time, nullable = True)
-    # task_id: Mapped[str | None] = mapped_column(nullable = True)
+

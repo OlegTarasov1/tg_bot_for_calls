@@ -26,7 +26,7 @@ app.conf.beat_schedule = {
         "schedule": crontab(
             hour = "0",
             minute="0",
-            day_of_week = "mon-fri"
+            day_of_week = "*"
         )
     }
 }

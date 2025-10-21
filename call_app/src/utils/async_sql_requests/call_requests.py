@@ -73,7 +73,9 @@ class AsyncCallRequets:
         
 
     @staticmethod
-    async def get_users_for_call(call_id: int) -> CallsBase:
+    async def get_users_for_call(
+        call_id: int
+    ) -> CallsBase:
         async with async_session() as session:
             stmt = (
                 select(
@@ -94,6 +96,22 @@ class AsyncCallRequets:
             users_for_the_call = users_for_the_call.scalar_one_or_none()
 
             return users_for_the_call
+
+    @staticmethod
+    async def delete_call_by_id(
+        id: int
+    ) -> None:
+        async with async_session() as session:
+            stmt = (
+                delete(
+                    CallsBase
+                )
+                .where(
+                    CallsBase.id == id
+                )
+            )
+            await session.execute(stmt)
+            await session.commit()
 
 
     @staticmethod

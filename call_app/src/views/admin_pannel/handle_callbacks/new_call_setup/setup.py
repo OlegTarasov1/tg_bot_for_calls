@@ -22,5 +22,5 @@ async def new_call(
     await state.set_state(ScheduleState.schedule_time)
 
     await callback_data.message.answer(
-        "Напишите время для оповещений о созонах в промежутке: 7:00-12:00, или 17:00-23:00."
+        "Напишите время для оповещений о созонах в формате: '8:00' (час:минута)."
     )

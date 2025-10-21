@@ -7,7 +7,18 @@ from aiogram import (
     Bot,
     Dispatcher
 )
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    handlers=[
+        logging.FileHandler("logs/bot.log", mode="a", encoding="utf-8"),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger("bot_logger")
 
 async def main():
     bot = Bot(token = os.getenv("BOT_TOKEN"))
