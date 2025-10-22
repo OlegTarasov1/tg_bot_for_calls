@@ -164,7 +164,7 @@ class AsyncCallRequets:
 
     @staticmethod
     async def get_todays_calls(
-        week_date: str
+        week_date: int
     ) -> list[CallsBase]:
         async with async_session() as session:
             stmt = (

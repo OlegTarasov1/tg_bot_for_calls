@@ -3,7 +3,7 @@ from utils.async_sql_requests.call_requests import AsyncCallRequets
 from utils.extra_funcs.send_message import send_message
 from schemas.raw_templates.template_call import get_call_text_template
 from celery import Celery
-from datetime import datetime
+from datetime import datetime, timedelta
 import asyncio
 import os
 
@@ -31,13 +31,13 @@ def send_message_to_user(
 
 
 async def load_invites_today_async(
-    date: str
+    date: int
 ):
     today_calls = await AsyncCallRequets.get_todays_calls(date)
     for i in today_calls:
         for j in i.employees:
             send_message_to_user.delay(
-                get_call_text_template(datetime.now().time()),
+                get_call_text_template(datetime.combine(datetime.now().date(), i.time)),
                 j.chat_id
             )
 
