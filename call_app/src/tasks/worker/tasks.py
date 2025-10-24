@@ -36,10 +36,16 @@ async def load_invites_today_async(
     today_calls = await AsyncCallRequets.get_todays_calls(date)
     for i in today_calls:
         for j in i.employees:
-            send_message_to_user.delay(
-                get_call_text_template(datetime.combine(datetime.now().date(), i.time)),
-                j.chat_id
+            call_time = datetime.combine(datetime.now().date(), i.time)
+            
+            send_message_to_user.apply_async(
+                args=[
+                    get_call_text_template(call_time),
+                    j.chat_id
+                ],
+                eta = call_time
             )
+
 
 
 @app.task()
