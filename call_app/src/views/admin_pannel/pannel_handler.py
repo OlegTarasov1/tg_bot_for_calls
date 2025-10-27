@@ -7,12 +7,13 @@ from utils.keyboards.menu_kb.employee_kb import employee_menu
 from utils.keyboards.menu_kb.admin_kb import admin_menu
 from views.admin_pannel.individual_calls.individual_calls_declare import individual_call_handler
 from views.admin_pannel.user_data_callbacks.update_user_data import update_user_data_router
-
+from views.admin_pannel.admin_features.mass_invites.mass_invites_handler import mass_invites_router
 
 admin_pannel_router = Router()
 admin_pannel_router.include_router(cb_calls_retreival_router)
 admin_pannel_router.include_router(individual_call_handler)
 admin_pannel_router.include_router(update_user_data_router)
+admin_pannel_router.include_router(mass_invites_router)
 
 
 @admin_pannel_router.message(Command("start"))
@@ -25,7 +26,7 @@ async def get_command_pannel(
     if user_data.is_admin:
         await msg.answer(
             "Админ панель:",
-            reply_markup = employee_menu
+            reply_markup = admin_menu
         )
     elif user_data.is_an_employee:
         await msg.answer(
