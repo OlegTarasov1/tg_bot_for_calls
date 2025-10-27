@@ -30,10 +30,32 @@ def send_message_to_user(
     )
 
 
-async def load_invites_today_async(
-    date: int
-):
-    today_calls = await AsyncCallRequets.get_todays_calls(date)
+# async def load_invites_today_async(
+#     date: int
+# ):
+#     today_calls = await AsyncCallRequets.get_todays_calls(date)
+#     for i in today_calls:
+#         for j in i.employees:
+#             call_time = datetime.combine(datetime.now().date(), i.time)
+            
+#             send_message_to_user.apply_async(
+#                 args=[
+#                     get_call_text_template(call_time),
+#                     j.chat_id
+#                 ],
+#                 eta = call_time
+#             )
+
+
+
+@app.task()
+def load_invites():
+
+    today_calls = asyncio.run(
+        AsyncCallRequets.get_todays_calls(
+            str(datetime.today().weekday())
+        )
+    )
     for i in today_calls:
         for j in i.employees:
             call_time = datetime.combine(datetime.now().date(), i.time)
@@ -45,13 +67,3 @@ async def load_invites_today_async(
                 ],
                 eta = call_time
             )
-
-
-
-@app.task()
-def load_invites():
-    asyncio.run(
-        load_invites_today_async(
-            date = str(datetime.today().weekday())
-        )
-    )

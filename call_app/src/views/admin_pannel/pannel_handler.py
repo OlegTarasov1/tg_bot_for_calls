@@ -6,11 +6,13 @@ from views.admin_pannel.handle_callbacks.retreive_calls import cb_calls_retreiva
 from utils.keyboards.menu_kb.employee_kb import employee_menu
 from utils.keyboards.menu_kb.admin_kb import admin_menu
 from views.admin_pannel.individual_calls.individual_calls_declare import individual_call_handler
+from views.admin_pannel.user_data_callbacks.update_user_data import update_user_data_router
 
 
 admin_pannel_router = Router()
 admin_pannel_router.include_router(cb_calls_retreival_router)
 admin_pannel_router.include_router(individual_call_handler)
+admin_pannel_router.include_router(update_user_data_router)
 
 
 @admin_pannel_router.message(Command("start"))
