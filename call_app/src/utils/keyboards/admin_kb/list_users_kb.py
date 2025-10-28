@@ -15,7 +15,7 @@ async def get_user_expended_kb(
     kb.add(
         *[
             InlineKeyboardButton(
-                text = f"{i.username} | {i.first_name} | {i.last_name}",
+                text = f"{i.username} | {i.first_name if not None else "..."} | {i.last_name if not None else "..."}",
                 callback_data = UsersCB(
                     function = "mass_invite",
                     user_id = i.id,
@@ -33,7 +33,7 @@ async def get_user_expended_kb(
                 callback_data = UsersCB(
                     function = "mass_invite_new_page",
                     page_offset = page_offset - 1 
-                )
+                ).pack()
             )
         )
     if are_more_pages:
@@ -43,8 +43,15 @@ async def get_user_expended_kb(
                 callback_data = UsersCB(
                     function = "mass_invite_new_page",
                     page_offset = page_offset + 1
-                )
+                ).pack()
             )
-        )   
+        )
+    
+    kb.add(
+        InlineKeyboardButton(
+            text = "Меню",
+            callback_data = "menu" 
+        )
+    )
 
     return kb.adjust(1).as_markup()

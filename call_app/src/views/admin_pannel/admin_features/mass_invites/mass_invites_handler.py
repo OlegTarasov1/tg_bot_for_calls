@@ -40,3 +40,25 @@ async def send_invite_to_user(
         chat_id = callback_data.chat_id,
         message = get_call_text_template(datetime.now().time())
     )
+
+
+@mass_invites_router.callback_query(UsersCB.filter(F.function == "mass_invite_new_page"))
+async def switch_page(
+    callback_query: CallbackQuery,
+    callback_data: UsersCB
+):
+    users = await AsyncRequestsUser.list_users(
+        page_offset = callback_data.page_offset
+    )
+    are_more_pages = await AsyncRequestsUser.list_users(
+        page_offset = callback_data.page_offset + 1
+    )
+
+    await callback_query.message.edit_text(
+        text = "выберите пользователей, которым отправить сообщение",
+        reply_markup = await get_user_expended_kb(
+            users = users,
+            page_offset = callback_data.page_offset,
+            are_more_pages = bool(len(are_more_pages))
+        )
+    )
