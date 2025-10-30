@@ -14,7 +14,7 @@ async def list_calls_for_user(
     page -= 1
     kb = InlineKeyboardBuilder()
     
-    for i in calls.calls[page * page_limit, page * page_limit + page_limit]:
+    for i in calls.calls[page * page_limit: page * page_limit + page_limit]:
         kb.add(
             InlineKeyboardButton(
                 text = f"{i.time.strftime("%H:%M")} | {i.call_purpose}",
@@ -31,7 +31,7 @@ async def list_calls_for_user(
             InlineKeyboardButton(
                 text = "Назад",
                 callback_data = CallsCB(
-                    page = page - 1
+                    page = page
                 ).pack()
             )
         ) 
@@ -40,7 +40,7 @@ async def list_calls_for_user(
             InlineKeyboardButton(
                 text = "Вперёд",
                 callback_data = CallsCB(
-                    page = page + 1
+                    page = page + 2
                 ).pack()
             )
         )
