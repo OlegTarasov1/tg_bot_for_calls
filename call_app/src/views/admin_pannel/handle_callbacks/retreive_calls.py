@@ -19,7 +19,7 @@ async def return_scheduled_calls(
     calls = await AsyncCallRequets.get_calls_for_user(
         id = query.from_user.id
     )
-
+    
     await query.message.edit_reply_markup(
         text = "запланированные созвоны:",
         reply_markup = await list_calls_for_user(
