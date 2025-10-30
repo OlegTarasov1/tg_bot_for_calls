@@ -6,6 +6,7 @@ from celery import Celery
 from datetime import datetime, timedelta
 import asyncio
 import os
+import logging
 
 
 settings = RedisEnv()
@@ -30,24 +31,6 @@ def send_message_to_user(
     )
 
 
-# async def load_invites_today_async(
-#     date: int
-# ):
-#     today_calls = await AsyncCallRequets.get_todays_calls(date)
-#     for i in today_calls:
-#         for j in i.employees:
-#             call_time = datetime.combine(datetime.now().date(), i.time)
-            
-#             send_message_to_user.apply_async(
-#                 args=[
-#                     get_call_text_template(call_time),
-#                     j.chat_id
-#                 ],
-#                 eta = call_time
-#             )
-
-
-
 @app.task()
 def load_invites():
 
@@ -59,6 +42,7 @@ def load_invites():
     for i in today_calls:
         for j in i.employees:
             call_time = datetime.combine(datetime.now().date(), i.time)
+            logging.warning(call_time)
             
             send_message_to_user.apply_async(
                 args=[
