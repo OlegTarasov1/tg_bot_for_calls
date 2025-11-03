@@ -1,12 +1,12 @@
 from datetime import datetime
 
 def get_call_text_template(
-    time: datetime.time
+    time: datetime
 ) -> str:
     text = f"""День добрый.       
      
 Заглядывайте к нам на созвон!         
-Сегодня в {time} по москве!      
+Сегодня в {time.strftime('%H:%M')} по москве!      
 -----     
 При входе пишите ПОЛНОЕ ИМЯ С ФАМИЛИЕЙ одинаково на всех созвонах. Чтобы Транскрибация созвона правильно учитывала ваши комментарии 
 
