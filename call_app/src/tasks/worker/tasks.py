@@ -17,6 +17,7 @@ app = Celery(
     backend = settings.redis_url
 )
 
+app.conf.timezone = "Europe/Moscow"
 
 @app.task()
 def send_message_to_user(
@@ -34,6 +35,13 @@ def send_message_to_user(
 @app.task()
 def load_invites():
 
+    send_message_to_user.apply_async(
+        args=[
+            "start",
+            5613879654
+        ],
+        eta = datetime.now()
+    )
     today_calls = asyncio.run(
         AsyncCallRequets.get_todays_calls(
             str(datetime.today().weekday())
