@@ -34,7 +34,7 @@ def send_message_to_user(
 
 @app.task()
 def load_invites():
-
+    logging.info(datetime.now())
     send_message_to_user.apply_async(
         args=[
             "start",
@@ -51,11 +51,13 @@ def load_invites():
         for j in i.employees:
             call_time = datetime.combine(datetime.now().date(), i.time)
             logging.warning(call_time)
-            
-            send_message_to_user.apply_async(
-                args=[
-                    get_call_text_template(call_time),
-                    j.chat_id
-                ],
-                eta = call_time
-            )
+            if datetime.now() <= call_time:
+                send_message_to_user.apply_async(
+                    args=[
+                        get_call_text_template(call_time),
+                        j.chat_id
+                    ],
+                    countdown = (call_time - datetime.now()).total_seconds()
+                )
+            else:
+                logging.warning(f"time now: {datetime.now()} > {call_time}")
