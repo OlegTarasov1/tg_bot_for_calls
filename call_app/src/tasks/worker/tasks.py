@@ -59,7 +59,7 @@ def load_invites():
                         get_call_text_template(call_time),
                         j.chat_id
                     ],
-                    countdown = (call_time.replace(tzinfo = moscow_tz) - datetime.now(moscow_tz)).total_seconds()
+                    eta = call_time
                 )
             else:
                 logging.warning(f"time now: {datetime.now(moscow_tz)} > {call_time}")

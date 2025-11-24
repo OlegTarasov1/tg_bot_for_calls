@@ -24,7 +24,7 @@ app.conf.beat_schedule = {
     "daily_morning_call_invites": {
         "task": "tasks.worker.tasks.load_invites",
         "schedule": crontab(
-            hour = "0",
+            hour = "3",
             minute="10",
             day_of_week = "*"
         )
