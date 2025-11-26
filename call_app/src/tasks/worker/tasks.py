@@ -2,6 +2,8 @@ from config.redis_config import RedisEnv
 from utils.async_sql_requests.call_requests import AsyncCallRequets
 from utils.extra_funcs.send_message import send_message
 from schemas.raw_templates.template_call import get_call_text_template
+# from tasks.beat.tasks import app
+from celery.schedules import crontab
 from celery import Celery
 from datetime import datetime, timedelta
 import asyncio
@@ -12,11 +14,32 @@ from zoneinfo import ZoneInfo
 
 settings = RedisEnv()
 
+# app = Celery(
+#     "tasks",
+#     broker = settings.redis_url,
+#     backend = settings.redis_url
+# )
+
 app = Celery(
-    "tasks",
+    "beat",
     broker = settings.redis_url,
     backend = settings.redis_url
 )
+
+app.conf.timezone = "Europe/Moscow"
+
+
+app.conf.beat_schedule = {
+    "daily_morning_call_invites": {
+        "task": "tasks.worker.tasks.load_invites",
+        "schedule": crontab(
+            hour = "20",
+            minute="10",
+            day_of_week = "*"
+        )
+    }
+}
+
 
 app.conf.timezone = "Europe/Moscow"
 
