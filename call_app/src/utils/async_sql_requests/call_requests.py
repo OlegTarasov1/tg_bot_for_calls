@@ -3,10 +3,11 @@ from utils.useful.sql_sessions import (
     get_db,
     async_session
 )
-from sqlalchemy import select, delete, and_
+from sqlalchemy import select, delete, and_, cast, Time
 from sqlalchemy.orm import selectinload
 from models.models import UsersBase, CallsBase, UsersCallsAssociation
-from datetime import datetime
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 
 class AsyncCallRequets:
@@ -165,7 +166,7 @@ class AsyncCallRequets:
     @staticmethod
     async def get_todays_calls(
         week_date: int
-    ) -> list[CallsBase]:
+    ) -> list[CallsBase | None]:
         async with async_session() as session:
             stmt = (
                 select(
@@ -186,5 +187,32 @@ class AsyncCallRequets:
             return calls
             
 
+    @staticmethod
+    async def get_close_call_invites() -> list[CallsBase | None]:
+        """Функция возвращает звонки + пользователей, с которыми звонки назначены"""
+        moscow_tz = ZoneInfo("Europe/Moscow")
 
+        logging.warning(f"time_now: {datetime.now(moscow_tz)}")
+        async with async_session() as session:
+            stmt = (
+                select(
+                    CallsBase
+                )
+                .options(
+                    selectinload(
+                        CallsBase.employees
+                    )
+                )
+                .where(
+                    CallsBase.time.between(
+                        cast((datetime.now(moscow_tz) - timedelta(seconds = 30)), Time),
+                        cast((datetime.now(moscow_tz) + timedelta(seconds = 30)), Time)                 
+                    )
+                )
+            )
+
+            calls_with_users = await session.execute(stmt)
+            calls_with_users.unique().scalars().all()
+
+            return calls_with_users
 
