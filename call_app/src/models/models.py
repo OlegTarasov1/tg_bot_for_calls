@@ -54,6 +54,9 @@ class CallsBase(Base):
         viewonly = True
     )
 
+    def __repr__(self):
+        return f"<Call: {self.call_purpose}|{self.time}>"
+
 
 class UsersCallsAssociation(Base):
     __tablename__ = "users_calls_association"

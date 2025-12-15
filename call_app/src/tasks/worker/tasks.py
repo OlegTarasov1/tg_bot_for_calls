@@ -58,6 +58,8 @@ def load_invites():
         AsyncCallRequets.get_close_call_invites()
     )
 
+    logging.warning(f"calls list: {calls}")
+    
     for i in calls:
         for j in i.employees:
             send_message_to_user.apply_async(

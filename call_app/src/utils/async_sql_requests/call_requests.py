@@ -204,15 +204,14 @@ class AsyncCallRequets:
                     )
                 )
                 .where(
-                    CallsBase.time.between(
-                        cast((datetime.now(moscow_tz) - timedelta(seconds = 30)), Time),
-                        cast((datetime.now(moscow_tz) + timedelta(seconds = 30)), Time)                 
-                    )
+                    CallsBase.time == datetime.now(moscow_tz).replace(second=0, microsecond=0).time()
                 )
             )
 
             calls_with_users = await session.execute(stmt)
-            calls_with_users.unique().scalars().all()
+            calls_with_users = calls_with_users.unique().scalars().all()
+            
+            logging.warning(calls_with_users)
 
             return calls_with_users
 
